@@ -1,0 +1,31 @@
+version: "3"
+services:
+        gitlab:
+                image: 'gitlab/gitlab-ee:latest'
+                environment:
+                        GITLAB_OMNIBUS_CONFIG: |
+                volumes:
+                        - ${GITLAB_HOME}/config:/etc/gitlab
+                        - ${GITLAB_HOME}/logs:/var/log/gitlab
+                        - ${GITLAB_HOME}/data:/var/opt/gitlab
+                ports:
+                        - "80:80"
+                        - "2222:22"
+                        - "443:443"
+        rundeck:
+                image: 'rundeckpro/enterprise:SNAPSHOT'
+                tty: true
+                volumes:
+                        - ./rundeck:/home/rundeck/server/data
+                ports:
+                        - "4440:4440"
+                environment:
+                        RUNDECK_GRAILS_URL: "${RUNDECK_URL}"
+        portainer:
+                image: 'portainer/portainer-ce'
+                volumes:
+                        - /var/run/docker.sock:/var/run/docker.sock
+                        - ./portainer:/data
+                ports:
+                        - "8000:8000"
+                        - "9000:9000"
