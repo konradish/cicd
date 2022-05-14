@@ -9,9 +9,21 @@ services:
                         - ${GITLAB_HOME}/logs:/var/log/gitlab
                         - ${GITLAB_HOME}/data:/var/opt/gitlab
                 ports:
-                        - "8082:80"
+                        - "80:80"
+                        - "443:443"
                         - "2222:22"
-                        - "9443:443"
+                restart: unless-stopped
+
+
+        gitlab-runner:
+                image: gitlab/gitlab-runner:alpine
+                restart: unless-stopped
+                depends_on:
+                        - gitlab
+                volumes:
+                        - ./gitlab-runner/config:/etc/gitlab-runner
+                        - /var/run/docker.sock:/var/run/docker.sock
+
         rundeck:
                 image: 'rundeckpro/enterprise:SNAPSHOT'
                 tty: true
@@ -21,6 +33,7 @@ services:
                         - "4440:4440"
                 environment:
                         RUNDECK_GRAILS_URL: "${RUNDECK_URL}"
+                restart: unless-stopped
         portainer:
                 image: 'portainer/portainer-ce'
                 volumes:
@@ -29,3 +42,17 @@ services:
                 ports:
                         - "8000:8000"
                         - "9000:9000"
+                restart: unless-stopped
+        duplicati:
+                image: lscr.io/linuxserver/duplicati:latest
+                container_name: duplicati
+                environment:
+                        - TZ=US/Central
+                volumes:
+                        - /var/lib/duplicati/config:/config
+                        - /var/lib/duplicati/backups:/backups
+                        - /:/source
+                ports:
+                        - "8200:8200"
+                restart: unless-stopped
+
