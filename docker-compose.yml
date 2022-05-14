@@ -9,9 +9,9 @@ services:
                         - ${GITLAB_HOME}/logs:/var/log/gitlab
                         - ${GITLAB_HOME}/data:/var/opt/gitlab
                 ports:
-                        - "80:80"
+                        - "8082:80"
                         - "2222:22"
-                        - "443:443"
+                        - "9443:443"
         rundeck:
                 image: 'rundeckpro/enterprise:SNAPSHOT'
                 tty: true
